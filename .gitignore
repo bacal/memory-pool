@@ -1,0 +1,7 @@
+# CLion Folders
+.idea/**
+
+# Cmake Build Directories
+cmake-*/**
+build/**
+
