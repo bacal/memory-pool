@@ -39,6 +39,8 @@ void* memory_pool_alloc(memory_pool *mempool, size_t size)
         mempool->objects->front = mempool->front;
         mempool->objects->back = mempool->front + size;
         mempool->objects->in_use = true;
+        mempool->objects->next = NULL;
+        mempool->objects->size = size;
         mempool->size_remaining -= size;
         return (void*) mempool->objects->front;
     }
@@ -55,7 +57,9 @@ void* memory_pool_alloc(memory_pool *mempool, size_t size)
         mem_object->next->in_use = true;
         mem_object->next->front = mempool->back - mempool->size_remaining;
         mem_object->next->back = mem_object->next->front + size;
-        return mem_object->next->front;
+        mem_object->next->size = size;
+        mem_object->next->next = NULL;
+        return (void*)mem_object->next->front;
     }
 }
 
@@ -66,38 +70,47 @@ void memory_pool_remove(memory_pool* mempool, void* data)
         if(temp->front == data)
         {
             temp->in_use = false;
-            mempool->size_remaining += temp->front - temp->back;
+            mempool->size_remaining += temp->size;
+            break;
         }
     }
 }
 
+
 void memory_pool_clear(memory_pool *mempool)
 {
-
+	memory_object* t_obj,*mem_obj;
+	mem_obj = mempool->objects;
+	while(mem_obj->next != NULL){
+		t_obj = mem_obj;
+		mem_obj =  mem_obj->next;
+		free(t_obj);
+	}
+	mempool->objects = NULL;
+	mempool->size_remaining = mempool->back - mempool->front;
+	for(int i=0; i<mempool->size_remaining; i++)
+	{
+		*(mempool->front+i) = 0;
+	}
 }
 
 void memory_pool_free(memory_pool *mempool)
 {
-    memory_object* mem_object;
-    if(mempool->objects)
-        mem_object= mempool->objects;
-    else
-    {
-        free(mempool->front);
-        free(mempool->back);
-        free(mempool);
-    }
+	memory_object* mem_object;
+	if (mempool->objects)
+	{
+		mem_object = mempool->objects;
+		while (mem_object->next != NULL)
+		{
+			memory_object* p_obj = mem_object;
+			mem_object = mem_object->next;
+			free(p_obj);
+		}
 
-    while(mem_object->next != NULL)
-    {
-        mem_object = mem_object->next;
-        free(mem_object->prev);
-    }
-    free(mem_object);
-    free(mempool->front);
-    free(mempool->back);
-    free(mempool);
+		free(mempool->front);
+		free(mempool);
 
+	}
 }
 
 void* use_preallocated_spot(memory_pool* mempool, size_t size)
@@ -107,7 +120,7 @@ void* use_preallocated_spot(memory_pool* mempool, size_t size)
         return NULL;
     for(memory_object* memory_object = mempool->objects;memory_object->next!= NULL; memory_object = memory_object->next)
     {
-        if(memory_object->in_use == false && memory_object->back - memory_object->front>= size)
+        if(memory_object->in_use == false && memory_object->size >= size)
         {
             memory_object->in_use = true;
             return memory_object->front;

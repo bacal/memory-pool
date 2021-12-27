@@ -7,9 +7,10 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-const static int KIB = 1024;
-const static long MIB = 1024*KIB;
-const static long long GIB = 1024*MIB;
+#define KIB 1024
+#define MIB 1024*KIB
+#define GIB 1024*MIB
+
 
 typedef struct MEMORY_POOL_OBJECT_STRUCT
 {
@@ -17,7 +18,8 @@ typedef struct MEMORY_POOL_OBJECT_STRUCT
     unsigned char* front; // beginning of data
     unsigned char* back; // end of data
     bool in_use; // whether or not chunk is in use
-    struct MEMORY_POOL_OBJECT_STRUCT* next; // points to next item in memory pool
+	int size; // size in bytes
+	struct MEMORY_POOL_OBJECT_STRUCT* next; // points to next item in memory pool
 }memory_object;
 
 typedef struct MEMORY_POOL_STRUCT
