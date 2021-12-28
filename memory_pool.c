@@ -81,7 +81,7 @@ void memory_pool_clear(memory_pool *mempool)
 {
 	memory_object* t_obj,*mem_obj;
 	mem_obj = mempool->objects;
-	while(mem_obj->next != NULL){
+	while(mem_obj != NULL){
 		t_obj = mem_obj;
 		mem_obj =  mem_obj->next;
 		free(t_obj);
@@ -100,7 +100,7 @@ void memory_pool_free(memory_pool *mempool)
 	if (mempool->objects)
 	{
 		mem_object = mempool->objects;
-		while (mem_object->next != NULL)
+		while (mem_object != NULL)
 		{
 			memory_object* p_obj = mem_object;
 			mem_object = mem_object->next;

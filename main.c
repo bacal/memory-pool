@@ -1,8 +1,9 @@
 #include <stdio.h>
+#include <unistd.h>
 #include "memory_pool.h"
 
 int main() {
-    memory_pool* mempool = memory_pool_init(40);
+    memory_pool* mempool = memory_pool_init(5*GIB);
     int* a = memory_pool_alloc(mempool, sizeof(int));
     *a = 0x20;
     memory_pool_remove(mempool,a);
@@ -22,7 +23,7 @@ int main() {
 	for(unsigned char i=0; i<10; i++){
 		printf("0x%x ",*(a+i));
 	}
-
+	sleep(1000);
     memory_pool_free(mempool);
     return 0;
 }

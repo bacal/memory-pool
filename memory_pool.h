@@ -7,9 +7,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#define KIB 1024
-#define MIB 1024*KIB
-#define GIB 1024*MIB
+#define KIB (unsigned long long int)1024
+#define MIB (unsigned long long int)1024*KIB
+#define GIB (unsigned long long int)1024*MIB
 
 
 typedef struct MEMORY_POOL_OBJECT_STRUCT
