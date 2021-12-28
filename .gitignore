@@ -51,4 +51,6 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+# Misc Build and IDE config files
 *build*/**
+.idea/**
