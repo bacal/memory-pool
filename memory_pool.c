@@ -5,6 +5,7 @@
 #include "memory_pool.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 void* use_preallocated_spot(memory_pool* mempool, size_t size);
 
@@ -15,7 +16,8 @@ memory_pool *memory_pool_init(size_t size)
         return NULL;
     }
     memory_pool* mempool = (memory_pool*) malloc(sizeof(struct MEMORY_POOL_STRUCT));
-    mempool->front = (unsigned char*)calloc(size, sizeof(unsigned char));
+    mempool->front = (unsigned char*)malloc(size* sizeof(unsigned char));
+    memset(mempool->front, 0, size);
     mempool->back = mempool->front + size;
     mempool->objects = NULL;
     mempool->size_remaining = size;
@@ -88,10 +90,10 @@ void memory_pool_clear(memory_pool *mempool)
 	}
 	mempool->objects = NULL;
 	mempool->size_remaining = mempool->back - mempool->front;
-	for(int i=0; i<mempool->size_remaining; i++)
-	{
-		*(mempool->front+i) = 0;
-	}
+
+	memset(mempool->front, 0, mempool->size_remaining);
+
+	mempool->objects = NULL;
 }
 
 void memory_pool_free(memory_pool *mempool)

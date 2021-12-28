@@ -7,7 +7,7 @@ int main() {
     int* a = memory_pool_alloc(mempool, sizeof(int));
     *a = 0x20;
     memory_pool_remove(mempool,a);
-    char* string = memory_pool_alloc(mempool,6);
+    unsigned char* string = memory_pool_alloc(mempool,6);
     *string = 'a';
     *(string+1) = 'b';
     *(string+2) = '\0';
@@ -16,14 +16,16 @@ int main() {
 
     memory_pool_remove(mempool,string);
 
-    string = memory_pool_alloc(mempool, 5);
+    string = memory_pool_alloc(mempool, 40);
+    *string = 0xFF;
+	*(string+1) = 0xFF;
+	memory_pool_remove(mempool,string);
 	memory_pool_clear(mempool);
-	printf("Size remaining: %d\n", mempool->size_remaining);
+	printf("Size remaining: %d bytes\n", mempool->size_remaining);
 	a = memory_pool_alloc(mempool,10*sizeof(int));
 	for(unsigned char i=0; i<10; i++){
 		printf("0x%x ",*(a+i));
 	}
-	sleep(1000);
     memory_pool_free(mempool);
     return 0;
 }

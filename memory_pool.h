@@ -35,6 +35,8 @@ memory_pool* memory_pool_init(size_t size);
 
 void* memory_pool_alloc(memory_pool* mempool, size_t size);
 
+void* memory_pool_alloc_aligned(memory_pool* mempool, size_t size);
+
 void memory_pool_remove(memory_pool* mempool, void* data);
 
 void memory_pool_clear(memory_pool* mempool);
