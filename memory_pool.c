@@ -64,15 +64,20 @@ void* memory_pool_alloc(memory_pool *mempool, size_t size)
         return (void*)mem_object->next->front;
     }
 }
+void *memory_pool_alloc_aligned(memory_pool *mempool, size_t size)
+{
 
-void memory_pool_remove(memory_pool* mempool, void* data)
+}
+
+void memory_pool_remove(memory_pool* mempool, void** data)
 {
     for(memory_object* temp = mempool->objects; temp != NULL; temp = temp->next)
     {
-        if(temp->front == data)
+        if(temp->front == *data)
         {
             temp->in_use = false;
             mempool->size_remaining += temp->size;
+            *data = NULL;
             break;
         }
     }
@@ -96,12 +101,12 @@ void memory_pool_clear(memory_pool *mempool)
 	mempool->objects = NULL;
 }
 
-void memory_pool_free(memory_pool *mempool)
+void memory_pool_free(memory_pool** mempool)
 {
 	memory_object* mem_object;
-	if (mempool->objects)
+	if ((*mempool)->objects)
 	{
-		mem_object = mempool->objects;
+		mem_object = (*mempool)->objects;
 		while (mem_object != NULL)
 		{
 			memory_object* p_obj = mem_object;
@@ -109,9 +114,9 @@ void memory_pool_free(memory_pool *mempool)
 			free(p_obj);
 		}
 
-		free(mempool->front);
-		free(mempool);
-
+		free((*mempool)->front);
+		free(*mempool);
+		*mempool = NULL;
 	}
 }
 
